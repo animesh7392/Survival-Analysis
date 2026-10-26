@@ -1,1 +1,36 @@
+ROLE: You are a senior actuarial data scientist and patient teacher.
 
+TASK: Build a runnable Python notebook that compares survival analysis against
+gradient boosting classification (XGBoost AND LightGBM) for predicting life
+insurance policy lapses, and explains in plain English which approach wins and why.
+
+CONTEXT: My dataset has these columns per policy-time-slice: policy_number,
+age_at_entry, sex_indicator, smoker_status_indicator, premium_structure,
+active, policy_holder_age, policy_duration, tranche_days,
+exposure_days, value_in_force, funds_under_management, actual_lives,
+expected_lives. Outcome semantics are not fully confirmed, so treat "event"
+as "active status ended" and flag all assumptions explicitly.
+
+REQUIREMENTS:
+1. DATA PREP: Define duration = exposure_days, event = 1 - active. Show why
+   coding censored rows as non-events is wrong. Build fixed-horizon labels
+   (H = 220 days): label=1 if event and duration<=H; label=0 if duration>H;
+   DROP rows censored before H. Explain each step in one plain-English sentence.
+2. MODELS: (a) Cox proportional hazards using lifelines; (b) XGBClassifier;
+   (c) LGBMClassifier; (d) XGBRegressor with objective="survival:cox" and
+   one with objective="survival:aft".
+3. FAIR COMPARISON: All models scored at the SAME horizon H=220 days.
+   Use C-index (concordance) and time-dependent Brier score with
+   inverse-probability censoring weights. Explicitly forbid accuracy/AUC
+   as metrics and explain why in one sentence.
+4. OUTPUT: A results table (model, C-index, Brier@220) plus a 4-bullet
+   plain-English interpretation: what C-index 0.7x means, what a lower Brier
+   means, which model ranks best, which is best calibrated.
+5. LAPSE RATE BY COHORT: Using the best survival model, produce lapse rate
+   within 220 days for each premium_structure and sex_indicator group,
+   with one-sentence business interpretation per group.
+6. GUARDRAILS: If any step has fewer than 30 events, print a warning that
+   results are illustrative, not decision-grade. Never invent column meanings
+   without an ASSUMPTION label.
+
+STYLE: Beginner-friendly. Define every term on first use. Comment every code block.
